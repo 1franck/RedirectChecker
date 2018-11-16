@@ -9,7 +9,7 @@ import (
 
 var nbOfJumps = 0
 
-func urlTick() (client *http.Client) {
+func createClient() (client *http.Client) {
 	// create a custom error to know if a redirect happened
 	var RedirectAttemptedError = errors.New("redirect")
 	client = &http.Client{}
@@ -44,7 +44,7 @@ func main() {
 	}
 
 	url := args[0]
-	client := urlTick()
+	client := createClient()
 
 	for {
 		resp, _ := client.Head(url)
