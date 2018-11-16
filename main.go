@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 )
 
 var nbOfJumps = 0
@@ -47,7 +48,14 @@ func main() {
 	client := createClient()
 
 	for {
-		resp, _ := client.Head(url)
+		resp, err := client.Head(url)
+
+		if err != nil && !strings.Contains(fmt.Sprint(err), "redirect") {
+			fmt.Println("Failed to fetch url:")
+			fmt.Println(err)
+			break
+		}
+
 		resp.Body.Close()
 		showResponse(resp)
 		if resp.Header.Get("location") != "" {
