@@ -23,10 +23,10 @@ func urlTick() (client *http.Client) {
 func showResponse(response *http.Response) {
 	nbOfJumps++
 	if nbOfJumps > 1 {
-		fmt.Println("Redirected to ...")
+		fmt.Printf("\nRedirected to ...\n")
 	}
 	fmt.Printf("[#%v] %v", nbOfJumps, response.Request.URL.String())
-	fmt.Printf("\n Status : %v\n", response.Status)
+	fmt.Printf("\n > %v\n", response.Status)
 	for i, v := range response.Header {
 		if i != "Location" {
 			fmt.Printf(" > %v : %v\n", i, v)
