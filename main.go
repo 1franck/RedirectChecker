@@ -8,8 +8,7 @@ import (
 )
 
 var nbOfJumps = 0
-var lastTime string
-var totalTime time.Duration
+var redirectTimes []time.Duration
 
 func createClient() (client *http.Client) {
 	client = &http.Client{
@@ -29,7 +28,7 @@ func showResponse(response *http.Response) {
 	if nbOfJumps > 1 {
 		fmt.Printf("\nRedirected to ...\n")
 	}
-	fmt.Printf("[#%v] %v - %v", nbOfJumps, response.Request.URL.String(), lastTime)
+	fmt.Printf("[#%v] %v - %v", nbOfJumps, response.Request.URL.String(), redirectTimes[nbOfJumps-1])
 	fmt.Printf("\n > Status: %v\n", response.Status)
 	for i, v := range response.Header {
 		if i != "Location" {
@@ -39,9 +38,7 @@ func showResponse(response *http.Response) {
 }
 
 func timeTrack(start time.Time) {
-	elapsed := time.Since(start)
-	totalTime += elapsed
-	lastTime = fmt.Sprintf("%s", elapsed)
+	redirectTimes = append(redirectTimes, time.Since(start))
 }
 
 func main() {
@@ -67,6 +64,10 @@ func main() {
 		if resp.Header.Get("location") != "" {
 			url = resp.Header.Get("location")
 		} else {
+			var totalTime time.Duration
+			for _, v := range redirectTimes {
+				totalTime += v
+			}
 			fmt.Printf("%v redirection(s) done in %s", nbOfJumps, totalTime)
 			break
 		}
