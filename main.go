@@ -1,28 +1,23 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 )
 
 var nbOfJumps = 0
 
 func createClient() (client *http.Client) {
-	// create a custom error to know if a redirect happened
-	var RedirectAttemptedError = errors.New("redirect")
-	client = &http.Client{}
-	// return the error, so client won't attempt redirects
-	client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
-		return RedirectAttemptedError
+	client = &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
 	}
 	return client
 }
 
 func showResponse(response *http.Response) {
-	nbOfJumps++
 	if nbOfJumps > 1 {
 		fmt.Printf("\nRedirected to ...\n")
 	}
@@ -48,15 +43,14 @@ func main() {
 	client := createClient()
 
 	for {
-		resp, err := client.Head(url)
-
-		if err != nil && !strings.Contains(fmt.Sprint(err), "redirect") {
-			fmt.Println("Failed to fetch url:")
-			fmt.Println(err)
+		resp, err := client.Get(url)
+		if err != nil {
+			fmt.Println("Failed to fetch url:", err)
 			break
 		}
-
 		resp.Body.Close()
+
+		nbOfJumps++
 		showResponse(resp)
 		if resp.Header.Get("location") != "" {
 			url = resp.Header.Get("location")
