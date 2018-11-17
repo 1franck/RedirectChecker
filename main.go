@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 )
 
 var nbOfJumps = 0
+var lastTime string
+var totalTime time.Duration
 
 func createClient() (client *http.Client) {
 	client = &http.Client{
@@ -17,11 +20,16 @@ func createClient() (client *http.Client) {
 	return client
 }
 
+func getUrl(client *http.Client, url string) (response *http.Response, err error) {
+	defer timeTrack(time.Now())
+	return client.Get(url)
+}
+
 func showResponse(response *http.Response) {
 	if nbOfJumps > 1 {
 		fmt.Printf("\nRedirected to ...\n")
 	}
-	fmt.Printf("[#%v] %v", nbOfJumps, response.Request.URL.String())
+	fmt.Printf("[#%v] %v - %v", nbOfJumps, response.Request.URL.String(), lastTime)
 	fmt.Printf("\n > Status: %v\n", response.Status)
 	for i, v := range response.Header {
 		if i != "Location" {
@@ -30,10 +38,14 @@ func showResponse(response *http.Response) {
 	}
 }
 
+func timeTrack(start time.Time) {
+	elapsed := time.Since(start)
+	totalTime += elapsed
+	lastTime = fmt.Sprintf("%s", elapsed)
+}
+
 func main() {
-
 	args := os.Args[1:]
-
 	if len(args) < 1 {
 		fmt.Println("Please, specify an url ...")
 		return
@@ -43,7 +55,7 @@ func main() {
 	client := createClient()
 
 	for {
-		resp, err := client.Get(url)
+		resp, err := getUrl(client, url)
 		if err != nil {
 			fmt.Println("Failed to fetch url:", err)
 			break
@@ -55,9 +67,8 @@ func main() {
 		if resp.Header.Get("location") != "" {
 			url = resp.Header.Get("location")
 		} else {
+			fmt.Printf("%v redirection(s) done in %s", nbOfJumps, totalTime)
 			break
 		}
 	}
-
-	nbOfJumps = 0
 }
