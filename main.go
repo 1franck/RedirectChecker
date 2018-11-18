@@ -11,12 +11,11 @@ var nbOfJumps = 0
 var redirectTimes []time.Duration
 
 func createClient() (client *http.Client) {
-	client = &http.Client{
+	return &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
 	}
-	return client
 }
 
 func getUrl(client *http.Client, url string) (response *http.Response, err error) {
