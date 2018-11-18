@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -49,6 +50,9 @@ func main() {
 	}
 
 	url := args[0]
+	if !strings.HasPrefix(url, "https://") && !strings.HasPrefix(url, "http://") {
+		url = "http://" + url
+	}
 	client := createClient()
 
 	for {
