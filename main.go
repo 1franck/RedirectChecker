@@ -8,6 +8,7 @@ import (
 )
 
 var nbOfJumps = 0
+var maxJumps = 20
 var redirectTimes []time.Duration
 
 func createClient() (client *http.Client) {
@@ -61,13 +62,17 @@ func main() {
 		nbOfJumps++
 		showResponse(resp)
 		if resp.Header.Get("location") != "" {
+			if nbOfJumps > maxJumps {
+				fmt.Printf("Maximum of %v redirects reached!", maxJumps)
+				break
+			}
 			url = resp.Header.Get("location")
 		} else {
 			var totalTime time.Duration
 			for _, v := range redirectTimes {
 				totalTime += v
 			}
-			fmt.Printf("%v redirection(s) done in %s", nbOfJumps, totalTime)
+			fmt.Printf("%v redirects(s) done in %s", nbOfJumps, totalTime)
 			break
 		}
 	}
