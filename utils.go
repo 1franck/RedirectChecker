@@ -20,7 +20,3 @@ func (i *arrayFlags) Set(value string) error {
 	*i = append(*i, strings.TrimSpace(value))
 	return nil
 }
-
-//func timeTrack(start time.Time) {
-//	redirectTimes = append(redirectTimes, time.Since(start))
-//}
