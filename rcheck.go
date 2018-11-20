@@ -110,7 +110,7 @@ func main() {
 			for _, v := range redirectTimes {
 				totalTime += v
 			}
-			fmt.Printf("%v redirects(s) done in %s", nbOfJumps, totalTime)
+			fmt.Printf("%v redirects(s) done in %s\n", nbOfJumps, totalTime)
 			break
 		}
 	}
