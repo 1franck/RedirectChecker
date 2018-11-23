@@ -4,11 +4,21 @@ My first project in golang for tracing HTTP redirection
 
 ### Build/install
 
-    $ go install rcheck.go http.go utils.go
+    $ go install rcheck.go http.go utils.go options.go results.go 
 
 ### Basic usage
 
     $ rcheck google.com
+    
+    [#1] http://google.com - 78.5741ms
+     > Status: 301 Moved Permanently
+     > Protocol: HTTP/1.1
+    
+    Redirected to ...
+    [#2] http://www.google.com/ - 92.558ms
+     > Status: 200 OK
+     > Protocol: HTTP/1.1
+    2 redirects(s) done in 171.1321ms
 
 ### Flag Options
 
